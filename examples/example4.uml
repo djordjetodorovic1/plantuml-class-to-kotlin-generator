@@ -1,0 +1,25 @@
+@startuml
+class Person {
+  - name : String
+}
+
+class Library {
+  - name : String
+  + findBook(title : String) : Book
+}
+
+class Book {
+  - title : String
+  - isbn : String
+}
+
+class Loan {
+  - startDate : String
+  - dueDate : String
+}
+
+Person "1" -- "many" Loan : borrows
+Loan "many" -- "1" Book : refersTo
+Library "1" o-- "many" Book : owns
+Person ..> Library : uses
+@enduml

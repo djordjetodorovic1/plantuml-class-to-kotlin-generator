@@ -1,0 +1,12 @@
+@startuml
+class Person {
+  - name : String
+}
+
+class Address {
+  - city : String
+  - street : String
+}
+
+Person "1" --> "1" Address : livesAt
+@enduml

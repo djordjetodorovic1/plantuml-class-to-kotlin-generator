@@ -1,0 +1,30 @@
+@startuml
+interface Drawable {
+  + draw() : void
+}
+
+abstract class Shape {
+  # color : String
+  + abstract area() : double
+}
+
+class Circle {
+  - radius : double
+  + area() : double
+}
+
+class Square {
+  - side : double
+  + area() : double
+}
+
+enum ShapeType {
+  CIRCLE
+  SQUARE
+  TRIANGLE
+}
+
+Shape ..|> Drawable
+Circle --|> Shape
+Square --|> Shape
+@enduml
