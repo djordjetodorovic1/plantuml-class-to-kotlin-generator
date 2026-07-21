@@ -1,25 +1,46 @@
 @startuml
-class Person {
-  - name : String
+enum BookStatus {
+    AVAILABLE, BORROWED, RESERVED, LOST
 }
 
-class Library {
-  - name : String
-  + findBook(title : String) : Book
+interface IBorrowable {
+    + borrowItem(memberId: int): boolean
+    + returnItem(memberId: int): boolean
+}
+
+abstract class Document {
+    + id: int
+    + title: String
+    + abstract getDetails(): String
 }
 
 class Book {
-  - title : String
-  - isbn : String
+    + author: String
+    + status: BookStatus
+    + getDetails(): String
+    + borrowItem(memberId: int): boolean
+    + returnItem(memberId: int): boolean
 }
 
-class Loan {
-  - startDate : String
-  - dueDate : String
+class Magazine {
+    + issueNumber: int
+    + getDetails(): String
 }
 
-Person "1" -- "many" Loan : borrows
-Loan "many" -- "1" Book : refersTo
-Library "1" o-- "many" Book : owns
-Person ..> Library : uses
+class LibraryMember {
+    + memberId: int
+    + fullName: String
+}
+
+class Library {
+    + name: String
+}
+
+Book --|> Document
+Book ..|> IBorrowable
+
+Magazine --|> Document
+
+Library "1" o-- "*" Document : catalogue
+Library "1" --> "*" LibraryMember : members
 @enduml

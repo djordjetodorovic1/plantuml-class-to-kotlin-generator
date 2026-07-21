@@ -1,0 +1,16 @@
+@startuml
+interface IDatabase {
+    + connect(): void
+    + disconnect(): void
+}
+
+class MySQLDatabase {
+    + url: String
+    + port: int
+    + url: String
+    + connect(): void
+}
+
+MySQLDatabase ..|> IDatabase
+MySQLDatabase --> Logger : logs
+@enduml

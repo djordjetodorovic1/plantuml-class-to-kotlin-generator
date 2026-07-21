@@ -1,0 +1,23 @@
+@startuml
+class Component {
+    + render(): void
+}
+
+class UIElement {
+    + draw(): void
+}
+
+class Button {
+    + click(): void
+}
+
+interface IClickable {
+    + onClick(): void
+}
+
+Component --|> UIElement
+UIElement --|> Button
+Button --|> Component
+
+Button --|> IClickable
+@enduml

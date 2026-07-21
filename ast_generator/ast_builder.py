@@ -1,8 +1,8 @@
 from parser.PlantUMLVisitor import PlantUMLVisitor
 from parser.PlantUMLParser import PlantUMLParser
-from ast_nodes import (
+from ast_generator.ast_nodes import (
     DiagramNode, ClassNode, EnumNode, RelationNode,
-    AttributeNode, MethodNode, ParamNode,
+    AttributeNode, MethodNode, ParamNode
 )
 
 class ASTBuilder(PlantUMLVisitor):
@@ -27,6 +27,8 @@ class ASTBuilder(PlantUMLVisitor):
             name=ctx.IDENTIFIER().getText(),
             is_abstract=ctx.ABSTRACT() is not None,
             is_interface=False,
+            line=ctx.start.line,
+            column=ctx.start.column + 1
         )
         self.fill_class_body(node, ctx.classBody())
         return node
@@ -36,6 +38,8 @@ class ASTBuilder(PlantUMLVisitor):
             name=ctx.IDENTIFIER().getText(),
             is_abstract=False,
             is_interface=True,
+            line=ctx.start.line,
+            column=ctx.start.column + 1
         )
         self.fill_class_body(node, ctx.classBody())
         return node
@@ -55,6 +59,8 @@ class ASTBuilder(PlantUMLVisitor):
             type_name=self.type_text(ctx.type_()),
             visibility=self.visibility_symbol(ctx.visibility()),
             is_static=ctx.STATIC() is not None,
+            line=ctx.start.line,
+            column=ctx.start.column + 1
         )
 
     def visitMethod(self, ctx):
@@ -73,6 +79,8 @@ class ASTBuilder(PlantUMLVisitor):
             visibility=self.visibility_symbol(ctx.visibility()),
             is_static=ctx.STATIC() is not None,
             is_abstract=ctx.ABSTRACT() is not None,
+            line=ctx.start.line,
+            column=ctx.start.column + 1
         )
 
     def visibility_symbol(self, visibility_ctx):
@@ -86,7 +94,7 @@ class ASTBuilder(PlantUMLVisitor):
         identifiers = ctx.IDENTIFIER()
         name = identifiers[0].getText()
         constants = [ident.getText() for ident in identifiers[1:]]
-        return EnumNode(name, constants)
+        return EnumNode(name, constants, line=ctx.start.line, column=ctx.start.column + 1)
 
     # Relation
     def visitRelation(self, ctx):
@@ -95,8 +103,9 @@ class ASTBuilder(PlantUMLVisitor):
         target_name = identifiers[1].getText()
 
         op_ctx = ctx.relationOp()
-        relation_token = op_ctx.getChild(0).getSymbol()
-        token_type_name = PlantUMLParser.symbolicNames[relation_token.type]
+        op_token = op_ctx.getChild(0).getSymbol()
+        op_text = op_ctx.getChild(0).getText()
+        token_type_name = PlantUMLParser.symbolicNames[op_token.type]
         relation_type = RELATION_TYPE_MAP.get(token_type_name, "UNKNOWN")
 
         mult_terminals = ctx.MULTIPLICITY()
@@ -110,6 +119,10 @@ class ASTBuilder(PlantUMLVisitor):
             else:
                 target_mult = term.getText().strip('"')
 
+        if op_text in REVERSED_ARROW_MAP.get(token_type_name, ()):
+            source_name, target_name = target_name, source_name
+            source_mult, target_mult = target_mult, source_mult
+
         label_text = self.label_text(ctx.label()) if ctx.label() else None
 
         return RelationNode(
@@ -119,6 +132,8 @@ class ASTBuilder(PlantUMLVisitor):
             source_multiplicity=source_mult,
             target_multiplicity=target_mult,
             label=label_text,
+            line=ctx.start.line,
+            column=ctx.start.column + 1
         )
 
     def label_text(self, label_ctx):
@@ -132,4 +147,13 @@ RELATION_TYPE_MAP = {
     "AGGREGATION_ARROW": "AGGREGATION",
     "DEPENDENCY_ARROW": "DEPENDENCY",
     "ASSOCIATION_ARROW": "ASSOCIATION",
+}
+
+REVERSED_ARROW_MAP = {
+    "EXTENDS_ARROW": ("<|--",),
+    "IMPLEMENTS_ARROW": ("<|..",),
+    "COMPOSITION_ARROW": ("--*",),
+    "AGGREGATION_ARROW": ("--o",),
+    "DEPENDENCY_ARROW": ("<..",),
+    "ASSOCIATION_ARROW": ("<--",),
 }

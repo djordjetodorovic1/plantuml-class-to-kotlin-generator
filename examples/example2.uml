@@ -1,12 +1,19 @@
 @startuml
 class Person {
-  - name : String
+    + id: int
+    + fullName: String
 }
 
-class Address {
-  - city : String
-  - street : String
+class User {
+    + username: String
+    + email: String
 }
 
-Person "1" --> "1" Address : livesAt
+class Order {
+    + totalAmount: double
+    + status: String
+}
+
+User --|> Person
+User "1" --> "*" Order : orders
 @enduml

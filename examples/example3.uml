@@ -1,30 +1,40 @@
 @startuml
 interface Drawable {
-  + draw() : void
+    + draw(): void
+}
+
+enum Color {
+    RED, GREEN, BLUE, YELLOW
 }
 
 abstract class Shape {
-  # color : String
-  + abstract area() : double
+    # color: Color
+    + abstract calculateArea(): double
 }
 
 class Circle {
-  - radius : double
-  + area() : double
+    + radius: double
+    + calculateArea(): double
+    + draw(): void
 }
 
-class Square {
-  - side : double
-  + area() : double
+class Rectangle {
+    + width: double
+    + height: double
+    + calculateArea(): double
+    + draw(): void
 }
 
-enum ShapeType {
-  CIRCLE
-  SQUARE
-  TRIANGLE
+class Canvas {
+    + name: String
+    + refresh(): void
 }
 
-Shape ..|> Drawable
 Circle --|> Shape
-Square --|> Shape
+Circle ..|> Drawable
+
+Rectangle --|> Shape
+Rectangle ..|> Drawable
+
+Canvas "1" o-- "*" Shape : shapes
 @enduml

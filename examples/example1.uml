@@ -1,8 +1,18 @@
 @startuml
-class Person {
-  - name : String
-  - age : int
-  + getName() : String
-  + getAge() : int
+class Vehicle {
+    + speed: int
+    + start(): void
+    + stop(): void
 }
+
+class Car {
+    + numDoors: int
+}
+
+class Bicycle {
+    + hasBell: boolean
+}
+
+Car --|> Vehicle
+Bicycle --|> Vehicle
 @enduml

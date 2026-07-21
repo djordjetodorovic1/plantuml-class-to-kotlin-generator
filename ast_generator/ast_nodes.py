@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 class ParamNode:
     name: str
     type_name: str
-
+    line: int | None = None
+    column: int | None = None
 
 @dataclass
 class AttributeNode:
@@ -12,7 +13,8 @@ class AttributeNode:
     type_name: str
     visibility: str | None = None
     is_static: bool = False
-
+    line: int | None = None
+    column: int | None = None
 
 @dataclass
 class MethodNode:
@@ -22,7 +24,8 @@ class MethodNode:
     visibility: str | None = None
     is_static: bool = False
     is_abstract: bool = False
-
+    line: int | None = None
+    column: int | None = None
 
 @dataclass
 class ClassNode:
@@ -32,13 +35,15 @@ class ClassNode:
     is_interface: bool = False
     attributes: list[AttributeNode] = field(default_factory=list)
     methods: list[MethodNode] = field(default_factory=list)
-
+    line: int | None = None
+    column: int | None = None
 
 @dataclass
 class EnumNode:
     name: str
     constants: list[str] = field(default_factory=list)
-
+    line: int | None = None
+    column: int | None = None
 
 @dataclass
 class RelationNode:
@@ -48,7 +53,8 @@ class RelationNode:
     source_multiplicity: str | None = None
     target_multiplicity: str | None = None
     label: str | None = None
-
+    line: int | None = None
+    column: int | None = None
 
 @dataclass
 class DiagramNode:
